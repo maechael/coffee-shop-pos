@@ -14,7 +14,7 @@
                             <script>
                                 document.write(new Date().getFullYear())
                             </script>©
-                        </span> <a href="{{ route('dashboard') }}" class="">Coffe Shop</a>.
+                        </span> <a href="{{ route('dashboard') }}" class="">Coffee Shop</a>.
                     </div>
                 </div>
             </div>
