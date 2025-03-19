@@ -11,11 +11,11 @@
                     </div>
 
                     <div class="invoice-btn d-flex">
-                        <form action="{{ route('pos.printInvoice') }}" method="post">
+                        <!-- <form action="{{ route('pos.printInvoice') }}" method="post">
                             @csrf
-                            <input type="hidden" name="customer_id" value="{{ $customer->id }}">
+                           
                             <button type="submit" class="btn btn-primary-dark mr-2"><i class="las la-print"></i> Print</button>
-                        </form>
+                        </form> -->
 
                         <button type="button" class="btn btn-primary-dark mr-2" data-toggle="modal" data-target=".bd-example-modal-lg">Create</button>
 
@@ -23,13 +23,12 @@
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header bg-white">
-                                        <h3 class="modal-title text-center mx-auto">Invoice of {{ $customer->name }}<br />Total Amount ₱{{ Cart::total() }}</h3>
+                                        <h3 class="modal-title text-center mx-auto">Invoice of {{$customer_name}}<br />Total Amount ₱{{ Cart::total() }}</h3>
                                     </div>
                                     <form id="formStoreOrder">
                                         @csrf
                                         <div class="modal-body">
-                                            <input type="hidden" name="customer_id" value="{{ $customer->id }}">
-
+                                            <input type="hidden" name="customer_name" id="customer_name" value={{$customer_name}}>
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="payment_status">Payment</label>
@@ -73,7 +72,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <img src="{{ asset('assets/images/logo.png') }}" class="logo-invoice img-fluid mb-3">
-                            <h5 class="mb-3">Hello, {{ $customer->name }}</h5>
+                            <h5 class="mb-3">Hello, {{$customer_name}}</h5>
                         </div>
                     </div>
 
@@ -85,20 +84,14 @@
                                         <tr>
                                             <th scope="col">Order Date</th>
                                             <th scope="col">Order Status</th>
-                                            <th scope="col">Billing Address</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                             <td>{{ Carbon\Carbon::now()->format('M d, Y') }}</td>
                                             <td><span class="badge badge-danger">Unpaid</span></td>
-                                            <td>
-                                                <p class="mb-0">{{ $customer->address }}<br>
-                                                    Shop Name: {{ $customer->shopname ? $customer->shopname : '-' }}<br>
-                                                    Phone: {{ $customer->phone }}<br>
-                                                    Email: {{ $customer->email }}<br>
-                                                </p>
-                                            </td>
+
                                         </tr>
                                     </tbody>
                                 </table>

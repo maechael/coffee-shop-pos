@@ -5,12 +5,12 @@
     <div class="row">
         <div class="col-lg-12">
             @if (session()->has('success'))
-                <div class="alert text-white bg-success" role="alert">
-                    <div class="iq-alert-text">{{ session('success') }}</div>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <div class="alert text-white bg-success" role="alert">
+                <div class="iq-alert-text">{{ session('success') }}</div>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <i class="ri-close-line"></i>
-                    </button>
-                </div>
+                </button>
+            </div>
             @endif
             <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                 <div>
@@ -29,10 +29,10 @@
                         <label for="row" class="col-sm-3 align-self-center">Row:</label>
                         <div class="col-sm-9">
                             <select class="form-control" name="row">
-                                <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
-                                <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
-                                <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
-                                <option value="100" @if(request('row') == '100')selected="selected"@endif>100</option>
+                                <option value="10" @if(request('row')=='10' )selected="selected" @endif>10</option>
+                                <option value="25" @if(request('row')=='25' )selected="selected" @endif>25</option>
+                                <option value="50" @if(request('row')=='50' )selected="selected" @endif>50</option>
+                                <option value="100" @if(request('row')=='100' )selected="selected" @endif>100</option>
                             </select>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                         <tr>
                             <td>{{ (($orders->currentPage() * 10) - 10) + $loop->iteration  }}</td>
                             <td>{{ $order->invoice_no }}</td>
-                            <td>{{ $order->customer->name }}</td>
+                            <td>{{ $order->customer_name }}</td>
                             <td>{{ $order->order_date }}</td>
                             <td>{{ $order->pay }}</td>
                             <td>{{ $order->payment_status }}</td>

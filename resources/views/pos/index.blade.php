@@ -74,12 +74,8 @@
                 <div class="row mt-3">
                     <div class="col-md-12">
                         <div class="input-group">
-                            <select class="form-control" id="customer_id" name="customer_id">
-                                <option selected="" disabled="">-- Select Customer --</option>
-                                @foreach ($customers as $customer)
-                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                                @endforeach
-                            </select>
+                            <input class="form-control" id="customer_name" name="customer_name">
+
                         </div>
                         @error('customer_id')
                         <div class="invalid-feedback">
@@ -89,7 +85,6 @@
                     </div>
                     <div class="col-md-12 mt-4">
                         <div class="d-flex flex-wrap align-items-center justify-content-center">
-                            <a href="{{ route('customers.create') }}" class="btn btn-primary add-list mx-1">Add Customer</a>
                             <button type="submit" class="btn btn-success add-list mx-1">Create Invoice</button>
                         </div>
                     </div>
@@ -136,6 +131,7 @@
                                     <th>Photo</th>
                                     <th>@sortablelink('product_name', 'name')</th>
                                     <th>@sortablelink('selling_price', 'price')</th>
+                                    <th>Stock</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -148,6 +144,7 @@
                                     </td>
                                     <td>{{ $product->product_name }}</td>
                                     <td>{{ $product->selling_price }}</td>
+                                    <td>{{ $product->product_store }}</td>
                                     <td>
                                         <form action="{{ route('pos.addCart') }}" method="POST" style="margin-bottom: 5px">
                                             @csrf
@@ -177,4 +174,9 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+
+    });
+</script>
 @endsection

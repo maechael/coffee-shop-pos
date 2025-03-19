@@ -22,7 +22,7 @@ class PosController extends Controller
         }
 
         return view('pos.index', [
-            'customers' => Customer::all()->sortBy('name'),
+            // 'customers' => Customer::all()->sortBy('name'),
             'productItem' => Cart::content(),
             'products' => Product::where('expire_date', '>', $todayDate)->filter(request(['search']))
                 ->sortable()
@@ -75,16 +75,18 @@ class PosController extends Controller
     public function createInvoice(Request $request)
     {
         $rules = [
-            'customer_id' => 'required'
+            'customer_name' => 'required'
         ];
 
         $validatedData = $request->validate($rules);
-        $customer = Customer::where('id', $validatedData['customer_id'])->first();
+        // $customer = Customer::where('id', $validatedData['customer_id'])->first();
         $content = Cart::content();
 
+
+
         return view('pos.create-invoice', [
-            'customer' => $customer,
-            'content' => $content
+            'content' => $content,
+            'customer_name' => $validatedData['customer_name']
         ]);
     }
 

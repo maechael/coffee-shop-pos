@@ -11,7 +11,6 @@ class Order extends Model
     use HasFactory, Sortable;
 
     protected $fillable = [
-        'customer_id',
         'order_date',
         'order_status',
         'total_products',
@@ -37,8 +36,8 @@ class Order extends Model
         'id',
     ];
 
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class, 'customer_id', 'id');
-    }
+    // public function customer()
+    // {
+    //     return $this->belongsTo(Customer::class, 'customer_id', 'id');
+    // }
 }

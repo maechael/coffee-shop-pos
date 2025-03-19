@@ -74,7 +74,7 @@ class OrderController extends Controller
 
 
         $rules = [
-            'customer_id' => 'required|numeric',
+            'customer_name' => 'required|string',
             'payment_status' => 'required|string',
             'pay' => 'numeric|nullable',
             'due' => 'numeric|nullable',

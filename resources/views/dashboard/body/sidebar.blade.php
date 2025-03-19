@@ -110,15 +110,6 @@
                 </li>
                 @endif
 
-                @if (auth()->user()->can('customer.menu'))
-                <li class="{{ Request::is('customers*') ? 'active' : '' }}">
-                    <a href="{{ route('customers.index') }}" class="svg-icon">
-                        <i class="fa-solid fa-users"></i>
-                        <span class="ml-3">Customers</span>
-                    </a>
-                </li>
-                @endif
-
                 @if (auth()->user()->can('supplier.menu'))
                 <li class="{{ Request::is('suppliers*') ? 'active' : '' }}">
                     <a href="{{ route('suppliers.index') }}" class="svg-icon">
