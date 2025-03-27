@@ -7,8 +7,15 @@ use App\Models\Product;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Discount;
+use App\Models\PaymentType;
 use Illuminate\Support\Facades\Redirect;
 use Gloudemans\Shoppingcart\Facades\Cart;
+use Illuminate\Contracts\Session\Session;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session as FacadesSession;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 
 class PosController extends Controller
 {
@@ -24,6 +31,7 @@ class PosController extends Controller
         return view('pos.index', [
             // 'customers' => Customer::all()->sortBy('name'),
             'productItem' => Cart::content(),
+            'discounts' => Discount::get(),
             'products' => Product::where('expire_date', '>', $todayDate)->filter(request(['search']))
                 ->sortable()
                 ->paginate($row)
@@ -65,6 +73,34 @@ class PosController extends Controller
         return Redirect::back()->with('success', 'Cart has been updated!');
     }
 
+    public function applyDiscount(Request $request)
+    {
+        // Validate input
+        // $request->validate([
+        //     'discount_price' => 'required|numeric|min:0|max:100',
+        //     'password' => 'required'
+        // ]);
+
+        // // Get currently authenticated user
+        // $user = Auth::user();
+
+        // // Check if user is admin
+        // if (!$user || !$user->hasRole('Admin')) {
+        //     return back()->with('error', 'Only admins can apply discounts.');
+        // }
+
+        // // Verify password
+        // if (!Hash::check($request->password, $user->password)) {
+        //     return back()->with('error', 'Incorrect password.');
+        // }
+
+        Cart::setDiscount($request->discount_price);
+
+
+
+        return Redirect::back()->with('success', 'Cart has been updated!');
+    }
+
     public function deleteCart(String $rowId)
     {
         Cart::remove($rowId);
@@ -81,11 +117,9 @@ class PosController extends Controller
         $validatedData = $request->validate($rules);
         // $customer = Customer::where('id', $validatedData['customer_id'])->first();
         $content = Cart::content();
-
-
-
         return view('pos.create-invoice', [
             'content' => $content,
+            'paymentTypes' => PaymentType::get(),
             'customer_name' => $validatedData['customer_name']
         ]);
     }

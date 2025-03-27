@@ -65,6 +65,16 @@
                                 <i class="fa-solid fa-arrow-right"></i><span>Stock Management</span>
                             </a>
                         </li>
+                        <li class="{{ Request::is('payment_type*') ? 'active' : '' }}">
+                            <a href="{{ route('payment_type.index') }}">
+                                <i class="fa-solid fa-arrow-right"></i><span>Payment Type</span>
+                            </a>
+                        </li>
+                        <li class="{{ Request::is('discount*') ? 'active' : '' }}">
+                            <a href="{{ route('discount.index') }}">
+                                <i class="fa-solid fa-arrow-right"></i><span>Discount</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 @endif

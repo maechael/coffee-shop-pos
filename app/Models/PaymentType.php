@@ -6,37 +6,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Kyslik\ColumnSortable\Sortable;
 
-class Category extends Model
+class PaymentType extends Model
 {
     use HasFactory, Sortable;
 
+    protected $table = "payment_type";
+
     protected $fillable = [
         'name',
-        'slug',
-    ];
-
-    protected $sortable = [
-        'name',
-        'slug',
-    ];
-
-    protected $guarded = [
-        'id',
     ];
 
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? false, function ($query, $search) {
             return $query->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('slug', 'like', '%' . $search . '%');
+                $query->where('name', 'like', '%' . $search . '%');
             });
         });
-    }
-
-
-    public function getRouteKeyName()
-    {
-        return 'slug';
     }
 }

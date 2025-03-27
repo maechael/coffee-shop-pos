@@ -5,6 +5,7 @@ namespace App\Models;
 use Kyslik\ColumnSortable\Sortable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -38,12 +39,19 @@ class Product extends Model
         'supplier'
     ];
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function supplier(){
+    public function supplier()
+    {
         return $this->belongsTo(Supplier::class, 'supplier_id');
+    }
+
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetails::class, 'product_id');
     }
 
     public function scopeFilter($query, array $filters)

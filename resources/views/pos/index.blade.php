@@ -67,29 +67,72 @@
                 <div class="form-group col-sm-6">
                     <p class="h4 text-primary">Total: {{ Cart::total() }}</p>
                 </div>
+                <div class="form-group col-sm-6">
+                    <p class="h4 text-primary">Discount: {{ Cart::discount() }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <form action="{{ route('pos.createInvoice') }}" method="POST">
+                        @csrf
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="customer_name">Customer Name</label>
+                                    <input class="form-control" id="customer_name" name="customer_name">
+                                    @error('customer_id')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-4">
+                                <div class="d-flex flex-wrap align-items-center justify-content-center">
+                                    <button type="submit" class="btn btn-success add-list mx-1">Create Invoice</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-6">
+                    <form action="{{ route('pos.applyDiscount') }}" method="POST">
+                        @csrf
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="discount_price">Discount Price</label>
+                                    <select class="form-control @error('discount_price') is-invalid @enderror" name="discount_price">
+                                        <option selected="" disabled="">-- Select Discount --</option>
+                                        @foreach($discounts as $discount)
+                                        <option value="{{ $discount->discount }}"
+                                            {{ Cart::discount() == $discount->discount ? 'selected' : '' }}>
+                                            {{ $discount->name }} ({{ $discount->discount }}%)
+                                        </option>
+
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password">
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-4">
+                                <div class="d-flex flex-wrap align-items-center justify-content-center">
+                                    <button type="submit" class="btn btn-info add-list mx-1">Apply Discount</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <form action="{{ route('pos.createInvoice') }}" method="POST">
-                @csrf
-                <div class="row mt-3">
-                    <div class="col-md-12">
-                        <div class="input-group">
-                            <input class="form-control" id="customer_name" name="customer_name">
 
-                        </div>
-                        @error('customer_id')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                        @enderror
-                    </div>
-                    <div class="col-md-12 mt-4">
-                        <div class="d-flex flex-wrap align-items-center justify-content-center">
-                            <button type="submit" class="btn btn-success add-list mx-1">Create Invoice</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
+
         </div>
 
         <div class="col-lg-6 col-md-12">
@@ -144,14 +187,16 @@
                                     </td>
                                     <td>{{ $product->product_name }}</td>
                                     <td>{{ $product->selling_price }}</td>
-                                    <td>{{ $product->product_store }}</td>
+                                    <td> {{ $product->product_store }}
+                                        @if ($product->product_store <= 10)
+                                            <i class="fa-solid fa-exclamation-circle text-danger" style="font-size: 1.2rem;" title="Low stock!"></i>
+                                            @endif
                                     <td>
                                         <form action="{{ route('pos.addCart') }}" method="POST" style="margin-bottom: 5px">
                                             @csrf
                                             <input type="hidden" name="id" value="{{ $product->id }}">
                                             <input type="hidden" name="name" value="{{ $product->product_name }}">
                                             <input type="hidden" name="price" value="{{ $product->selling_price }}">
-
                                             <button type="submit" class="btn btn-primary border-none" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add"><i class="far fa-plus mr-0"></i></button>
                                         </form>
                                     </td>

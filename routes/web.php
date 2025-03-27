@@ -16,6 +16,8 @@ use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\PosController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,12 +97,14 @@ Route::middleware(['permission:category.menu'])->group(function () {
 
 // ====== POS ======
 Route::middleware(['permission:pos.menu'])->group(function () {
-    Route::get('/pos', [PosController::class,'index'])->name('pos.index');
+    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
     Route::post('/pos/add', [PosController::class, 'addCart'])->name('pos.addCart');
     Route::post('/pos/update/{rowId}', [PosController::class, 'updateCart'])->name('pos.updateCart');
     Route::get('/pos/delete/{rowId}', [PosController::class, 'deleteCart'])->name('pos.deleteCart');
     Route::post('/pos/invoice/create', [PosController::class, 'createInvoice'])->name('pos.createInvoice');
     Route::post('/pos/invoice/print', [PosController::class, 'printInvoice'])->name('pos.printInvoice');
+    Route::post('/pos/apply-discount', [PosController::class, 'applyDiscount'])->name('pos.applyDiscount');
+
 
     // Create Order
     Route::post('/pos/order', [OrderController::class, 'storeOrder'])->name('pos.storeOrder');
@@ -113,6 +117,8 @@ Route::middleware(['permission:orders.menu'])->group(function () {
     Route::get('/orders/details/{order_id}', [OrderController::class, 'orderDetails'])->name('order.orderDetails');
     Route::put('/orders/update/status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
     Route::get('/orders/invoice/download/{order_id}', [OrderController::class, 'invoiceDownload'])->name('order.invoiceDownload');
+    Route::post('/order/toggle-status', [OrderController::class, 'toggleStatus'])->name('order.toggleStatus');
+    Route::get('/order/generate-report', [OrderController::class, 'generateReport'])->name('order.generateReport');
 
     // Pending Due
     Route::get('/pending/due', [OrderController::class, 'pendingDue'])->name('order.pendingDue');
@@ -121,6 +127,13 @@ Route::middleware(['permission:orders.menu'])->group(function () {
 
     // Stock Management
     Route::get('/stock', [OrderController::class, 'stockManage'])->name('order.stockManage');
+
+
+    //Payment Type
+    Route::resource('/payment_type', PaymentController::class);
+
+    //discount
+    Route::resource('/discount', DiscountController::class);
 });
 
 // ====== DATABASE BACKUP ======
@@ -158,4 +171,6 @@ Route::middleware(['permission:roles.menu'])->group(function () {
     Route::delete('/role/permission/{id}', [RoleController::class, 'rolePermissionDestroy'])->name('rolePermission.destroy');
 });
 
-require __DIR__.'/auth.php';
+
+
+require __DIR__ . '/auth.php';

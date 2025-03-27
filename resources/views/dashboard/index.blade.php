@@ -4,14 +4,14 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
-        @if (session()->has('success'))
+            @if (session()->has('success'))
             <div class="alert text-white bg-success" role="alert">
                 <div class="iq-alert-text">{{ session('success') }}</div>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <i class="ri-close-line"></i>
+                    <i class="ri-close-line"></i>
                 </button>
             </div>
-        @endif
+            @endif
         </div>
         <div class="col-lg-4">
             <div class="card card-transparent card-block card-stretch card-height border-none">
@@ -158,7 +158,7 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-unstyled row top-product mb-0">
-                    @foreach ($products as $product)
+                        @foreach ($products as $product)
                         <li class="col-lg-3">
                             <div class="card card-block card-stretch card-height mb-0">
                                 <div class="card-body">
@@ -172,7 +172,7 @@
                                 </div>
                             </div>
                         </li>
-                    @endforeach
+                        @endforeach
                     </ul>
                 </div>
             </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Exports\OrdersExport;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\OrderDetails;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -49,6 +51,18 @@ class OrderController extends Controller
         ]);
     }
 
+    public function toggleStatus(Request $request)
+    {
+        $order = Order::find($request->order_id);
+        if ($order) {
+            $order->status = $request->is_active == 1 ? 'active' : 'inactive'; // Update status
+            $order->save();
+
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false]);
+    }
+
     public function stockManage()
     {
         $row = (int) request('row', 10);
@@ -72,12 +86,15 @@ class OrderController extends Controller
     public function storeOrder(Request $request)
     {
 
+        $request->merge([
+            'pay' => str_replace(',', '', $request->pay) // Remove commas
+        ]);
 
         $rules = [
             'customer_name' => 'required|string',
             'payment_status' => 'required|string',
-            'pay' => 'numeric|nullable',
-            'due' => 'numeric|nullable',
+            'pay' => 'nullable|numeric|min:0', // Allow null, but must be a number if provided
+            'due' => 'nullable|numeric|min:0'
         ];
 
         $invoice_no = IdGenerator::generate([
@@ -87,15 +104,17 @@ class OrderController extends Controller
             'prefix' => 'INV-'
         ]);
 
+
         $validatedData = $request->validate($rules);
+
         $validatedData['order_date'] = Carbon::now()->format('Y-m-d');
         $validatedData['order_status'] = 'pending';
         $validatedData['total_products'] = Cart::count();
         $validatedData['sub_total'] = Cart::subtotal();
         $validatedData['vat'] = Cart::tax();
         $validatedData['invoice_no'] = $invoice_no;
-        $validatedData['total'] = Cart::total();
-        $validatedData['due'] = Cart::total() - $validatedData['pay'];
+        $validatedData['total'] = floatval(str_replace(',', '', Cart::total()));
+        $validatedData['due'] = floatval(str_replace(',', '', Cart::total())) - floatval($validatedData['pay']);
         $validatedData['created_at'] = Carbon::now();
 
         $order_id = Order::insertGetId($validatedData);
@@ -117,6 +136,7 @@ class OrderController extends Controller
 
         // Delete Cart Sopping History
         Cart::destroy();
+        Cart::setDiscount(0);
 
         return response()->json([
             'success' => true,
@@ -223,5 +243,68 @@ class OrderController extends Controller
         ]);
 
         return Redirect::route('order.pendingDue')->with('success', 'Due Amount Updated Successfully!');
+    }
+
+    public function generateReport(Request $request)
+    {
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        $orders = Order::where('status', 'active')->with(['orderDetails.product'])
+            ->whereBetween('order_date', [$request->start_date, $request->end_date])
+            ->get();
+
+        $data = [];
+        $totalBuyingPrice = 0;
+        $totalSellingPrice = 0;
+        $totalVat = 0;
+
+        foreach ($orders as $order) {
+            foreach ($order->orderDetails as $detail) {
+                $sellingPrice = $detail->product->selling_price * $detail->quantity;
+                $buyingPrice = $detail->product->buying_price * $detail->quantity;
+                $vatAmount = $order->vat;
+
+                $totalBuyingPrice += $buyingPrice;
+                $totalSellingPrice += $sellingPrice;
+                $totalVat += $vatAmount;
+
+                $data[] = [
+                    'Invoice No' => $order->invoice_no,
+                    'Order Date' => $order->order_date,
+                    'Product' => $detail->product->name,
+                    'Quantity' => $detail->quantity,
+                    'Buying Price' => $buyingPrice,
+                    'Selling Price' => $sellingPrice,
+                    'VAT' => $vatAmount,
+                ];
+            }
+        }
+
+        // Calculate Revenue
+        $revenue = $totalSellingPrice - ($totalBuyingPrice + $totalVat);
+
+        // Add totals at the end of the report
+        $data[] = [
+            'Invoice No' => '',
+            'Order Date' => '',
+            'Product' => 'TOTALS',
+            'Quantity' => '',
+            'Buying Price' => $totalBuyingPrice,
+            'Selling Price' => $totalSellingPrice,
+            'VAT' => $totalVat,
+        ];
+        $data[] = [
+            'Invoice No' => '',
+            'Order Date' => '',
+            'Product' => 'REVENUE',
+            'Quantity' => '',
+            'Buying Price' => '',
+            'Selling Price' => '',
+            'VAT' => '',
+            'Revenue' => $revenue,
+        ];
+
+
+        return Excel::download(new OrdersExport($data), 'Order_Report.xlsx');
     }
 }

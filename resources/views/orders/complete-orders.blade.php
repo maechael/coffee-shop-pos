@@ -17,7 +17,38 @@
                     <h4 class="mb-3">Complete Order List</h4>
                 </div>
                 <div>
-                    <a href="{{ route('order.pendingOrders') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash mr-3"></i>Clear Search</a>
+                    <button class="btn btn-danger" data-toggle="modal" data-target="#reportModal">
+                        <i class="fa-solid fa-file-excel mr-3"></i>Generate Report
+                    </button>
+                    <a href="{{ route('order.completeOrders') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash mr-3"></i>Clear Search</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reportModalLabel">Select Date Range</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="{{ route('order.generateReport') }}" method="GET">
+                        <div class="modal-body">
+                            <label for="start_date">Start Date:</label>
+                            <input type="date" name="start_date" class="form-control" required>
+
+                            <label for="end_date" class="mt-2">End Date:</label>
+                            <input type="date" name="end_date" class="form-control" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa-solid fa-download mr-2"></i>Download Report
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -81,6 +112,9 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center list-action">
+                                    <input type="checkbox" class="toggle-status  mr-2" data-id=" {{ $order->id }}"
+                                        {{ $order->status == 'active' ? 'checked' : '' }}>
+
                                     <a class="btn btn-info mr-2" data-toggle="tooltip" data-placement="top" title="" data-original-title="Details" href="{{ route('order.orderDetails', $order->id) }}">
                                         Details
                                     </a>
@@ -99,5 +133,34 @@
     </div>
     <!-- Page end  -->
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('.toggle-status').change(function() {
+            let orderId = $(this).data('id');
+            let status = $(this).prop('checked') ? 1 : 0;
+
+            $.ajax({
+                url: "{{ route('order.toggleStatus') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    order_id: orderId,
+                    is_active: status
+                },
+                success: function(response) {
+                    if (response.success) {
+                        console.log("Status updated successfully!");
+                    } else {
+                        alert("Failed to update status!");
+                    }
+                },
+                error: function() {
+                    alert("Error updating status.");
+                }
+            });
+        });
+    });
+</script>
 
 @endsection

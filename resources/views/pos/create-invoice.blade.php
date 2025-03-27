@@ -34,9 +34,10 @@
                                                     <label for="payment_status">Payment</label>
                                                     <select class="form-control @error('payment_status') is-invalid @enderror" name="payment_status">
                                                         <option selected="" disabled="">-- Select Payment --</option>
-                                                        <option value="Cash">Cash</option>
-                                                        <option value="Gcash">Gcash</option>
-                                                        <option value="Maya">Maya</option>
+                                                        @foreach($paymentTypes as $paymentType)
+                                                        <option value="{{$paymentType->name}}">{{$paymentType->name}}</option>
+
+                                                        @endforeach
                                                     </select>
                                                     @error('payment_status')
                                                     <div class="invalid-feedback">
@@ -168,6 +169,7 @@
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script>
     $(document).ready(function() {
 
@@ -178,20 +180,23 @@
             autoGroup: true,
             rightAlign: false,
 
+
         });
 
         $('#formStoreOrder').on('submit', function(e) {
             e.preventDefault();
 
-
             let payInput = $('#pay');
-            let parsedValue = payInput.val().replace(/[^0-9.]/g, ''); // Remove commas and non-numeric characters
+            let payValue = payInput.val().replace(/,/g, '').trim(); // Remove commas and extra spaces
 
-            payInput.val(parsedValue); // Set parsed value before submission
+            if (payValue === "") {
+                payInput.val(0); // If empty, set it to 0
+            } else {
+                payInput.val(parseFloat(payValue)); // Convert to float before sending
+            }
+            console.log(payInput.val());
 
-
-            let formData = $(this).serialize(); // Serialize form data
-
+            let formData = $(this).serialize(); // Serialize after conversion
             $.ajax({
                 url: "{{ route('pos.storeOrder') }}", // Laravel route helper
                 method: "POST",

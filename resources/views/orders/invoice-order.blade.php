@@ -56,10 +56,8 @@
                             <div class="row">
                                 <div class="col-sm-6 mb-50">
                                     <h4 class="inv-title-1">Customer</h4>
-                                    <p class="inv-from-1">{{ $order->customer->name }}</p>
-                                    <p class="inv-from-1">{{ $order->customer->email }}</p>
-                                    <p class="inv-from-1">{{ $order->customer->phone }}</p>
-                                    <p class="inv-from-2">{{ $order->customer->address }}</p>
+                                    <p class="inv-from-1">{{ $order->customer_name }}</p>
+
                                 </div>
                                 <div class="col-sm-6 text-end mb-50">
                                     <h4 class="inv-title-1">Details</h4>
