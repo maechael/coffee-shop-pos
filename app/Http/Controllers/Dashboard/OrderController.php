@@ -110,7 +110,7 @@ class OrderController extends Controller
         $validatedData['order_date'] = Carbon::now()->format('Y-m-d');
         $validatedData['order_status'] = 'pending';
         $validatedData['total_products'] = Cart::count();
-        $validatedData['sub_total'] = Cart::subtotal();
+        $validatedData['sub_total'] = floatval(str_replace(',', '', Cart::subtotal()));
         $validatedData['vat'] = Cart::tax();
         $validatedData['invoice_no'] = $invoice_no;
         $validatedData['total'] = floatval(str_replace(',', '', Cart::total()));
@@ -259,23 +259,29 @@ class OrderController extends Controller
         $totalVat = 0;
 
         foreach ($orders as $order) {
+            $orderVatAdded = false;
+
             foreach ($order->orderDetails as $detail) {
                 $sellingPrice = $detail->product->selling_price * $detail->quantity;
                 $buyingPrice = $detail->product->buying_price * $detail->quantity;
-                $vatAmount = $order->vat;
 
                 $totalBuyingPrice += $buyingPrice;
                 $totalSellingPrice += $sellingPrice;
-                $totalVat += $vatAmount;
+
+                // Only add VAT once per order
+                if (!$orderVatAdded) {
+                    $totalVat += $order->vat;
+                    $orderVatAdded = true;
+                }
 
                 $data[] = [
                     'Invoice No' => $order->invoice_no,
                     'Order Date' => $order->order_date,
-                    'Product' => $detail->product->name,
+                    'Product' => $detail->product->product_name,
                     'Quantity' => $detail->quantity,
                     'Buying Price' => $buyingPrice,
                     'Selling Price' => $sellingPrice,
-                    'VAT' => $vatAmount,
+                    'VAT' => !$orderVatAdded ? $order->vat : '',
                 ];
             }
         }

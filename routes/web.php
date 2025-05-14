@@ -104,7 +104,7 @@ Route::middleware(['permission:pos.menu'])->group(function () {
     Route::post('/pos/invoice/create', [PosController::class, 'createInvoice'])->name('pos.createInvoice');
     Route::post('/pos/invoice/print', [PosController::class, 'printInvoice'])->name('pos.printInvoice');
     Route::post('/pos/apply-discount', [PosController::class, 'applyDiscount'])->name('pos.applyDiscount');
-
+    Route::post('pos/updateCartModal', [PosController::class, 'updateCartModal'])->name('pos.updateCartModal');
 
     // Create Order
     Route::post('/pos/order', [OrderController::class, 'storeOrder'])->name('pos.storeOrder');

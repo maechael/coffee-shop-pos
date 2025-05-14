@@ -5,20 +5,20 @@
     <div class="row">
         <div class="col-lg-12">
             @if (session()->has('success'))
-                <div class="alert text-white bg-success" role="alert">
-                    <div class="iq-alert-text">{{ session('success') }}</div>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <div class="alert text-white bg-success" role="alert">
+                <div class="iq-alert-text">{{ session('success') }}</div>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <i class="ri-close-line"></i>
-                    </button>
-                </div>
+                </button>
+            </div>
             @endif
             @if (session()->has('error'))
-                <div class="alert text-white bg-danger" role="alert">
-                    <div class="iq-alert-text">{{ session('success') }}</div>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <div class="alert text-white bg-danger" role="alert">
+                <div class="iq-alert-text">{{ session('success') }}</div>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <i class="ri-close-line"></i>
-                    </button>
-                </div>
+                </button>
+            </div>
             @endif
             <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                 <div>
@@ -36,10 +36,10 @@
                         <label for="row" class="col-sm-3 align-self-center">Row:</label>
                         <div class="col-sm-9">
                             <select class="form-control" name="row">
-                                <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
-                                <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
-                                <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
-                                <option value="100" @if(request('row') == '100')selected="selected"@endif>100</option>
+                                <option value="10" @if(request('row')=='10' )selected="selected" @endif>10</option>
+                                <option value="25" @if(request('row')=='25' )selected="selected" @endif>25</option>
+                                <option value="50" @if(request('row')=='50' )selected="selected" @endif>50</option>
+                                <option value="100" @if(request('row')=='100' )selected="selected" @endif>100</option>
                             </select>
                         </div>
                     </div>
@@ -77,7 +77,7 @@
                         <tr>
                             <td>{{ (($products->currentPage() * 10) - 10) + $loop->iteration  }}</td>
                             <td>
-                                <img class="avatar-60 rounded" src="{{ $product->product_image ? asset('storage/products/'.$product->product_image) : asset('assets/images/product/default.webp') }}">
+                                <img class="avatar-60 rounded" src="{{ $product->product_image ? asset('assets/images/product/'.$product->product_image) : asset('assets/images/product/default.webp') }}">
                             </td>
                             <td>{{ $product->product_name }}</td>
                             <td>{{ $product->category->name }}</td>
@@ -92,7 +92,7 @@
                         <div class="alert text-white bg-danger" role="alert">
                             <div class="iq-alert-text">Data not Found.</div>
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <i class="ri-close-line"></i>
+                                <i class="ri-close-line"></i>
                             </button>
                         </div>
                         @endforelse

@@ -133,15 +133,7 @@
                         </div>
                     </div>
 
-                    <!-- <div class="row">
-                        <div class="col-sm-12">
-                            <b class="text-danger">Notes:</b>
-                            <p class="mb-0">It is a long established fact that a reader will be distracted by the readable content of a page
-                                when looking
-                                at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters,
-                                as opposed to using 'Content here, content here', making it look like readable English.</p>
-                        </div>
-                    </div> -->
+
 
                     <div class="row mt-4 mb-3">
                         <div class="offset-lg-8 col-lg-4">

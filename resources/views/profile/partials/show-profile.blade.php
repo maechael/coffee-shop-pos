@@ -2,7 +2,7 @@
 <div class="alert text-white bg-success" role="alert">
     <div class="iq-alert-text">{{ session('success') }}</div>
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <i class="ri-close-line"></i>
+        <i class="ri-close-line"></i>
     </button>
 </div>
 @endif
@@ -15,7 +15,7 @@
 <div class="card-body">
     <div class="form-group row align-items-center">
         <div class="col-md-12">
-            <img class="crm-profile-pic rounded-circle avatar-100" src="{{  auth()->user()->photo ? asset('storage/profile/'. auth()->user()->photo) : asset('assets/images/user/1.png') }}" alt="profile-pic">
+            <img class="crm-profile-pic rounded-circle avatar-100" src="{{  auth()->user()->photo ? asset('assets/images/profile/'. auth()->user()->photo) : asset('assets/images/user/1.png') }}" alt="profile-pic">
         </div>
     </div>
     <div class=" row align-items-center">

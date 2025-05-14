@@ -1,227 +1,218 @@
-@extends('dashboard.body.main')
+@extends('dashboard.body.pos-main')
 
 @section('container')
-<div class="container-fluid">
 
-    <div class="row">
-        <div class="col-lg-12">
-            @if (session()->has('success'))
-            <div class="alert text-white bg-success" role="alert">
-                <div class="iq-alert-text">{{ session('success') }}</div>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <i class="ri-close-line"></i>
-                </button>
+<div class="row">
+    <div class="col-8">
+        <div class="row mb-3">
+            <div class="col-auto">
+                <a href="{{ route('pos.index') }}"
+                    class="btn {{ request('category') ? 'btn-outline-success' : 'btn-success' }}">
+                    All
+                </a>
             </div>
-            @endif
-            <div>
-                <h4 class="mb-3">Point of Sale</h4>
+            @foreach($categories as $category)
+            <div class="col-auto">
+                <a href="{{ route('pos.index', ['category' => $category->id]) }}"
+                    class="btn {{ request('category') == $category->id ? 'btn-success' : 'btn-outline-success' }}">
+                    {{ $category->name }}
+                </a>
             </div>
+            @endforeach
+        </div>
+        <div class="row">
+            @foreach ($products as $product)
+            <div class="col-4 mb-3">
+                <form action="{{ route('pos.addCart') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="id" value="{{ $product->id }}">
+                    <input type="hidden" name="name" value="{{ $product->product_name }}">
+                    <input type="hidden" name="price" value="{{ $product->selling_price }}">
+                    <button type="submit" class="btn btn-outline-success w-100" style="height: 100px;">
+                        {{ $product->product_name }}
+                    </button>
+                </form>
+            </div>
+            @endforeach
         </div>
 
-        <div class="col-lg-6 col-md-12 mb-3">
-            <table class="table">
-                <thead>
-                    <tr class="ligth">
-                        <th scope="col">Name</th>
-                        <th scope="col">QTY</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">SubTotal</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
+    </div>
+
+    <div class="col-4 p-3" style="background-color: #f8f8f8; border-left: 2px solid #ddd; min-height: 100vh;">
+
+        {{-- Order Summary --}}
+        <div class="mb-3">
+            <h5 class="text-muted mb-1">Order Summary</h5>
+            <table class="table table-sm table-borderless">
                 <tbody>
                     @foreach ($productItem as $item)
-                    <tr>
-                        <td>{{ $item->name }}</td>
-                        <td style="min-width: 140px;">
-                            <form action="{{ route('pos.updateCart', $item->rowId) }}" method="POST">
-                                @csrf
-                                <div class="input-group">
-                                    <input type="number" class="form-control" name="qty" required value="{{ old('qty', $item->qty) }}">
-                                    <div class="input-group-append">
-                                        <button type="submit" class="btn btn-success border-none" data-toggle="tooltip" data-placement="top" title="" data-original-title="Sumbit"><i class="fas fa-check"></i></button>
-                                    </div>
-                                </div>
-                            </form>
-                        </td>
+                    <tr
+                        class="cart-item"
+                        data-rowid="{{ $item->rowId }}"
+                        data-name="{{ $item->name }}"
+                        data-qty="{{ $item->qty }}"
+                        data-discount="{{ $item->options->discount ?? 0 }}"
+                        data-note="{{ $item->options->note ?? '' }}"
+                        data-price="{{ $item->price }}"
+
+                        style="cursor: pointer;">
+                        <td class="text-truncate" style="max-width: 100px;">{{ $item->name }}</td>
+                        <td>{{ $item->qty }}</td>
                         <td>{{ $item->price }}</td>
                         <td>{{ $item->subtotal }}</td>
                         <td>
-                            <a href="{{ route('pos.deleteCart', $item->rowId) }}" class="btn btn-danger border-none" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"><i class="fa-solid fa-trash mr-0"></i></a>
+                            <a href="{{ route('pos.deleteCart', $item->rowId) }}" class="btn btn-danger btn-sm">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
-
-            <div class="container row text-center">
-                <div class="form-group col-sm-6">
-                    <p class="h4 text-primary">Quantity: {{ Cart::count() }}</p>
-                </div>
-                <div class="form-group col-sm-6">
-                    <p class="h4 text-primary">Subtotal: {{ Cart::subtotal() }}</p>
-                </div>
-                <div class="form-group col-sm-6">
-                    <p class="h4 text-primary">Vat: {{ Cart::tax() }}</p>
-                </div>
-                <div class="form-group col-sm-6">
-                    <p class="h4 text-primary">Total: {{ Cart::total() }}</p>
-                </div>
-                <div class="form-group col-sm-6">
-                    <p class="h4 text-primary">Discount: {{ Cart::discount() }}</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <form action="{{ route('pos.createInvoice') }}" method="POST">
-                        @csrf
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="customer_name">Customer Name</label>
-                                    <input class="form-control" id="customer_name" name="customer_name">
-                                    @error('customer_id')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-4">
-                                <div class="d-flex flex-wrap align-items-center justify-content-center">
-                                    <button type="submit" class="btn btn-success add-list mx-1">Create Invoice</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="col-6">
-                    <form action="{{ route('pos.applyDiscount') }}" method="POST">
-                        @csrf
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="discount_price">Discount Price</label>
-                                    <select class="form-control @error('discount_price') is-invalid @enderror" name="discount_price">
-                                        <option selected="" disabled="">-- Select Discount --</option>
-                                        @foreach($discounts as $discount)
-                                        <option value="{{ $discount->discount }}"
-                                            {{ Cart::discount() == $discount->discount ? 'selected' : '' }}>
-                                            {{ $discount->name }} ({{ $discount->discount }}%)
-                                        </option>
-
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="password">Password</label>
-                                    <input type="password" class="form-control" id="password" name="password">
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 mt-4">
-                                <div class="d-flex flex-wrap align-items-center justify-content-center">
-                                    <button type="submit" class="btn btn-info add-list mx-1">Apply Discount</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-
-
         </div>
 
-        <div class="col-lg-6 col-md-12">
-            <div class="card card-block card-stretch card-height">
-                <div class="card-body">
-                    <form action="#" method="get">
-                        <div class="d-flex flex-wrap align-items-center justify-content-between">
-                            <div class="form-group row">
-                                <label for="row" class="align-self-center mx-2">Row:</label>
-                                <div>
-                                    <select class="form-control" name="row">
-                                        <option value="10" @if(request('row')=='10' )selected="selected" @endif>10</option>
-                                        <option value="25" @if(request('row')=='25' )selected="selected" @endif>25</option>
-                                        <option value="50" @if(request('row')=='50' )selected="selected" @endif>50</option>
-                                        <option value="100" @if(request('row')=='100' )selected="selected" @endif>100</option>
-                                    </select>
-                                </div>
-                            </div>
+        {{-- Subtotal Display --}}
+        <div class="text-center mb-3">
+            <i class="fa-solid fa-mug-hot fa-lg text-muted"></i>
+            <h4 class="mt-1">Subtotal <strong class="text-dark">₱{{ Cart::subtotal() }}</strong></h4>
+        </div>
 
-                            <div class="form-group row">
-                                <label class="control-label col-sm-3 align-self-center" for="search">Search:</label>
-                                <div class="input-group col-sm-8">
-                                    <input type="text" id="search" class="form-control" name="search" placeholder="Search product" value="{{ request('search') }}">
-                                    <div class="input-group-append">
-                                        <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20"></i></button>
-                                        <a href="{{ route('products.index') }}" class="input-group-text bg-danger"><i class="fa-solid fa-trash"></i></a>
-                                    </div>
-                                </div>
-                            </div>
+        {{-- Change/Discount/Service Tabs (simplified visual) --}}
+        <ul class="nav nav-pills justify-content-center mb-3">
+            <li class="nav-item">
+                <span class="nav-link active">Change</span>
+            </li>
+            <li class="nav-item">
+                <span class="nav-link disabled">Discount</span>
+            </li>
+            <li class="nav-item">
+                <span class="nav-link disabled">Service</span>
+            </li>
+        </ul>
+
+        {{-- Cash Denominations --}}
+        <div class="d-flex flex-wrap gap-2 justify-content-center mb-3">
+            @foreach ([20, 50, 100, 200, 500, 1000] as $amount)
+            <button class="btn btn-outline-primary btn-lg px-4 py-2 m-1">₱{{ $amount }}</button>
+            @endforeach
+            <button class="btn btn-outline-primary btn-lg px-4 py-2 m-1">Custom</button>
+            <button class="btn btn-outline-primary btn-lg px-4 py-2 m-1">Clear</button>
+        </div>
+
+        {{-- Payment Summary --}}
+        <div class="row mb-2 text-center">
+            <div class="col">
+                <p class="h6">Cash Received</p>
+                <p class="h5">₱1000</p> {{-- Replace with dynamic value later --}}
+            </div>
+            <div class="col">
+                <p class="h6">Change</p>
+                <p class="h5 text-success">₱{{ number_format(1000 - floatval(Cart::subtotal()), 2) }}</p>
+            </div>
+        </div>
+
+        {{-- Payment Buttons --}}
+        <form action="{{ route('pos.createInvoice') }}" method="POST">
+            @csrf
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="customer_name">Customer Name</label>
+                        <input class="form-control" id="customer_name" name="customer_name">
+                        @error('customer_id')
+                        <div class="invalid-feedback">
+                            {{ $message }}
                         </div>
-                    </form>
-
-
-                    <div class="table-responsive rounded mb-3 border-none">
-                        <table class="table mb-0">
-                            <thead class="bg-white text-uppercase">
-                                <tr class="ligth ligth-data">
-                                    <th>No.</th>
-                                    <th>Photo</th>
-                                    <th>@sortablelink('product_name', 'name')</th>
-                                    <th>@sortablelink('selling_price', 'price')</th>
-                                    <th>Stock</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="ligth-body">
-                                @forelse ($products as $product)
-                                <tr>
-                                    <td>{{ (($products->currentPage() * 10) - 10) + $loop->iteration  }}</td>
-                                    <td>
-                                        <img class="avatar-60 rounded" src="{{ $product->product_image ? asset('storage/products/'.$product->product_image) : asset('assets/images/product/default.webp') }}">
-                                    </td>
-                                    <td>{{ $product->product_name }}</td>
-                                    <td>{{ $product->selling_price }}</td>
-                                    <td> {{ $product->product_store }}
-                                        @if ($product->product_store <= 10)
-                                            <i class="fa-solid fa-exclamation-circle text-danger" style="font-size: 1.2rem;" title="Low stock!"></i>
-                                            @endif
-                                    <td>
-                                        <form action="{{ route('pos.addCart') }}" method="POST" style="margin-bottom: 5px">
-                                            @csrf
-                                            <input type="hidden" name="id" value="{{ $product->id }}">
-                                            <input type="hidden" name="name" value="{{ $product->product_name }}">
-                                            <input type="hidden" name="price" value="{{ $product->selling_price }}">
-                                            <button type="submit" class="btn btn-primary border-none" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add"><i class="far fa-plus mr-0"></i></button>
-                                        </form>
-                                    </td>
-                                </tr>
-
-                                @empty
-                                <div class="alert text-white bg-danger" role="alert">
-                                    <div class="iq-alert-text">Data not Found.</div>
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <i class="ri-close-line"></i>
-                                    </button>
-                                </div>
-                                @endforelse
-                            </tbody>
-                        </table>
+                        @enderror
                     </div>
-                    {{ $products->links() }}
+                </div>
+                <div class="col-md-12 mt-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center">
+                        <button type="submit" class="btn btn-success add-list mx-1">Create Invoice</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
+
+
     </div>
 </div>
+
+
+<div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{{ route('pos.updateCartModal') }}">
+            @csrf
+            <input type="hidden" name="rowId" id="modal-rowId">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editItemModalLabel">Edit Item</h5>
+
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="modal-name" class="form-label">Product</label>
+                        <input type="text" class="form-control" id="modal-name" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-qty" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" name="qty" id="modal-qty" min="1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-discount" class="form-label">Discount (%)</label>
+                        <input type="number" class="form-control" name="discount" id="modal-discount" min="0" max="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-discounted-price" class="form-label">Discounted Price</label>
+                        <input type="text" class="form-control" id="modal-discounted-price" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-note" class="form-label">Note</label>
+                        <input type="text" class="form-control" name="note" id="modal-note">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
+        $(document).on('click', '.cart-item', function() {
+            const rowId = $(this).data('rowid');
+            const name = $(this).data('name');
+            const qty = $(this).data('qty');
+            const discount = $(this).data('discount') || 0;
+            const note = $(this).data('note') || '';
+            const price = $(this).data('price'); // make sure this exists!
 
+            $('#modal-rowId').val(rowId);
+            $('#modal-name').val(name);
+            $('#modal-qty').val(qty);
+            $('#modal-discount').val(discount);
+            $('#modal-note').val(note);
+
+            const updateDiscountedPrice = () => {
+                const qtyVal = parseInt($('#modal-qty').val()) || 1;
+                const discountVal = parseFloat($('#modal-discount').val()) || 0;
+                const basePrice = parseFloat(price);
+
+                const total = basePrice * qtyVal;
+                const discountedTotal = total - (total * (discountVal / 100));
+
+                $('#modal-discounted-price').val('₱' + discountedTotal.toFixed(2));
+            };
+
+            updateDiscountedPrice();
+
+            $('#modal-qty, #modal-discount').on('input', updateDiscountedPrice);
+
+            $('#editItemModal').modal('show');
+        });
     });
 </script>
+
 @endsection

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Discount;
 use App\Models\PaymentType;
 use Illuminate\Support\Facades\Redirect;
@@ -23,16 +24,24 @@ class PosController extends Controller
     {
         $todayDate = Carbon::now();
         $row = (int) request('row', 10);
+        $categoryId = request('category');
 
         if ($row < 1 || $row > 100) {
             abort(400, 'The per-page parameter must be an integer between 1 and 100.');
         }
 
+        $productsQuery = Product::where('expire_date', '>', $todayDate)
+            ->filter(request(['search']));
+
+        if ($categoryId) {
+            $productsQuery->where('category_id', $categoryId);
+        }
+
         return view('pos.index', [
-            // 'customers' => Customer::all()->sortBy('name'),
             'productItem' => Cart::content(),
             'discounts' => Discount::get(),
-            'products' => Product::where('expire_date', '>', $todayDate)->filter(request(['search']))
+            'categories' => Category::get(),
+            'products' => $productsQuery
                 ->sortable()
                 ->paginate($row)
                 ->appends(request()->query()),
@@ -138,5 +147,34 @@ class PosController extends Controller
             'customer' => $customer,
             'content' => $content
         ]);
+    }
+
+
+    public function updateCartModal(Request $request)
+    {
+        $rowId = $request->input('rowId');
+        $qty = (int) $request->input('qty');
+        $discount = $request->input('discount');
+        $note = $request->input('note');
+
+        $item = Cart::get($rowId);
+
+        if ($item) {
+            $price = $item->price;
+            if ($discount && is_numeric($discount)) {
+                $price = $item->price * (1 - ($discount / 100));
+            }
+
+            Cart::update($rowId, [
+                'qty' => $qty,
+                'price' => $price,
+                'options' => [
+                    'discount' => $discount,
+                    'note' => $note,
+                ]
+            ]);
+        }
+
+        return redirect()->back();
     }
 }

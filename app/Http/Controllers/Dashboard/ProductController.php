@@ -87,9 +87,10 @@ class ProductController extends Controller
          */
         if ($file = $request->file('product_image')) {
             $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
-            $path = 'public/products/';
+            // $path = 'public/products';
 
-            $file->storeAs($path, $fileName);
+            // $file->storeAs($path, $fileName);
+            $file->move(public_path('assets/images/product'), $fileName);
             $validatedData['product_image'] = $fileName;
         }
 
@@ -149,18 +150,13 @@ class ProductController extends Controller
         /**
          * Handle upload image with Storage.
          */
+
         if ($file = $request->file('product_image')) {
             $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
-            $path = 'public/products/';
 
-            /**
-             * Delete photo if exists.
-             */
-            if ($product->product_image) {
-                Storage::delete($path . $product->product_image);
-            }
 
-            $file->storeAs($path, $fileName);
+            // $imageData = $file->storeAs($path, $fileName);
+            $file->move(public_path('assets/images/product'), $fileName);
             $validatedData['product_image'] = $fileName;
         }
 

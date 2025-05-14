@@ -6,14 +6,14 @@
 </div>
 <div class="card-body">
     <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    @method('put')
+        @csrf
+        @method('put')
         <!-- begin: Input Image -->
         <div class="form-group row align-items-center">
             <div class="col-md-12">
                 <div class="profile-img-edit">
                     <div class="crm-profile-img-edit">
-                        <img class="crm-profile-pic rounded-circle avatar-100" id="image-preview" src="{{ $user->photo ? asset('storage/profile/'.$user->photo) : asset('assets/images/user/1.png') }}" alt="profile-pic">
+                        <img class="crm-profile-pic rounded-circle avatar-100" id="image-preview" src="{{ $user->photo ? asset('assets/images/profile/'.$user->photo) : asset('assets/images/user/1.png') }}" alt="profile-pic">
                     </div>
                 </div>
             </div>
