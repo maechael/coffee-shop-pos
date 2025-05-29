@@ -101,7 +101,6 @@
                                 <th>Product</th>
                                 <th>Quantity</th>
                                 <th>Selling Price</th>
-                                <th>Buying Price</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,7 +123,6 @@
                                 <td>{{ $detail->product->product_name }}</td>
                                 <td>{{ $detail->quantity }}</td>
                                 <td>{{ number_format($sellingPrice, 2) }}</td>
-                                <td>{{ number_format($buyingPrice, 2) }}</td>
                             </tr>
                             @endforeach
                             @endforeach
@@ -132,12 +130,7 @@
                         <tfoot>
                             <tr>
                                 <th colspan="4" class="text-right">Total</th>
-                                <th>{{ number_format($totalSelling, 2) }}</th>
                                 <th>{{ number_format($totalBuying, 2) }}</th>
-                            </tr>
-                            <tr>
-                                <th colspan="4" class="text-right">Revenue</th>
-                                <th colspan="2" class="text-success">{{ number_format($revenue, 2) }}</th>
                             </tr>
                         </tfoot>
                     </table>

@@ -13,8 +13,8 @@
 
                 <div class="card-body">
                     <form action="{{ route('suppliers.update', $supplier->id) }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('put')
+                        @csrf
+                        @method('put')
                         <!-- begin: Input Image -->
                         <div class="form-group row align-items-center">
                             <div class="col-md-12">
@@ -134,8 +134,12 @@
                                 <label for="type">Type of Supplier <span class="text-danger">*</span></label>
                                 <select class="form-control @error('type') is-invalid @enderror" name="type" required>
                                     <option value="">Select Type..</option>
-                                    <option value="Distributor" @if(old('type', $supplier->type) == 'Distributor')selected="selected"@endif>Distributor</option>
-                                    <option value="Whole Seller" @if(old('type', $supplier->type) == 'Whole Seller')selected="selected"@endif>Whole Seller</option>
+                                    @foreach($typeOfSuppliers as $typeOfSupplier)
+                                    <option value="{{ $typeOfSupplier->name }}"
+                                        @if(old('type', $supplier->type ?? '') == $typeOfSupplier->name) selected @endif>
+                                        {{ $typeOfSupplier->name }}
+                                    </option>
+                                    @endforeach
                                 </select>
                                 @error('type')
                                 <div class="invalid-feedback">

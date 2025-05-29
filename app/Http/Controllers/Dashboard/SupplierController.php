@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\TypeOfSupplier;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
@@ -22,8 +23,10 @@ class SupplierController extends Controller
             abort(400, 'The per-page parameter must be an integer between 1 and 100.');
         }
 
+
         return view('suppliers.index', [
             'suppliers' => Supplier::filter(request(['search']))->sortable()->paginate($row)->appends(request()->query()),
+
         ]);
     }
 
@@ -33,6 +36,8 @@ class SupplierController extends Controller
     public function create()
     {
         return view('suppliers.create', [
+            'typeOfSuppliers' => TypeOfSupplier::orderBy('name')->get(),
+
         ]);
     }
 
@@ -62,7 +67,7 @@ class SupplierController extends Controller
          * Handle upload image with Storage.
          */
         if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
             $path = 'public/suppliers/';
 
             $file->storeAs($path, $fileName);
@@ -90,7 +95,9 @@ class SupplierController extends Controller
     public function edit(Supplier $supplier)
     {
         return view('suppliers.edit', [
-            'supplier' => $supplier
+            'supplier' => $supplier,
+            'typeOfSuppliers' => TypeOfSupplier::orderBy('name')->get(),
+
         ]);
     }
 
@@ -102,8 +109,8 @@ class SupplierController extends Controller
         $rules = [
             'photo' => 'image|file|max:1024',
             'name' => 'required|string|max:50',
-            'email' => 'required|email|max:50|unique:suppliers,email,'.$supplier->id,
-            'phone' => 'required|string|max:15|unique:suppliers,phone,'.$supplier->id,
+            'email' => 'required|email|max:50|unique:suppliers,email,' . $supplier->id,
+            'phone' => 'required|string|max:15|unique:suppliers,phone,' . $supplier->id,
             'shopname' => 'required|string|max:50',
             'type' => 'required|string|max:25',
             'account_holder' => 'max:50',
@@ -120,13 +127,13 @@ class SupplierController extends Controller
          * Handle upload image with Storage.
          */
         if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
             $path = 'public/suppliers/';
 
             /**
              * Delete photo if exists.
              */
-            if($supplier->photo){
+            if ($supplier->photo) {
                 Storage::delete($path . $supplier->photo);
             }
 
@@ -147,7 +154,7 @@ class SupplierController extends Controller
         /**
          * Delete photo if exists.
          */
-        if($supplier->photo){
+        if ($supplier->photo) {
             Storage::delete('public/suppliers/' . $supplier->photo);
         }
 

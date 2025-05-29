@@ -132,6 +132,16 @@ class OrderController extends Controller
             $oDetails['created_at'] = Carbon::now();
 
             OrderDetails::insert($oDetails);
+
+            $product = Product::find($content->id);
+
+            foreach ($product->rawMaterials as $rawMaterial) {
+                // Subtract from the raw material stock based on quantity_cost
+                // $quantityUsedPerUnit = $rawMaterial->pivot->quantity_cost ?? 1;
+                // $totalUsed = $quantityUsedPerUnit * $content->qty;
+                $rawMaterial->quantity -= 1;
+                $rawMaterial->save();
+            }
         }
 
         // Delete Cart Sopping History

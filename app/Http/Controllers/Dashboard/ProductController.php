@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\RawMaterial;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -37,6 +38,8 @@ class ProductController extends Controller
                 ->sortable()
                 ->paginate($row)
                 ->appends(request()->query()),
+
+
         ]);
     }
 
@@ -48,6 +51,7 @@ class ProductController extends Controller
         return view('products.create', [
             'categories' => Category::all(),
             'suppliers' => Supplier::all(),
+            'rawMaterials' => RawMaterial::all()->sortBy('name'),
         ]);
     }
 
@@ -63,6 +67,8 @@ class ProductController extends Controller
             'prefix' => 'PC'
         ]);
 
+
+
         $rules = [
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
@@ -75,6 +81,7 @@ class ProductController extends Controller
             'buying_price' => 'required|integer',
             'selling_price' => 'required|integer',
         ];
+
 
         $validatedData = $request->validate($rules);
 
@@ -94,7 +101,8 @@ class ProductController extends Controller
             $validatedData['product_image'] = $fileName;
         }
 
-        Product::create($validatedData);
+        $productCreated = Product::create($validatedData);
+        $productCreated->rawMaterials()->sync($request->raw_material_id);
 
         return Redirect::route('products.index')->with('success', 'Product has been created!');
     }
@@ -123,7 +131,9 @@ class ProductController extends Controller
         return view('products.edit', [
             'categories' => Category::all(),
             'suppliers' => Supplier::all(),
-            'product' => $product
+            'product' => $product,
+            'rawMaterials' => RawMaterial::all()->sortBy('name'),
+
         ]);
     }
 
@@ -161,6 +171,14 @@ class ProductController extends Controller
         }
 
         Product::where('id', $product->id)->update($validatedData);
+
+        if ($request->has('raw_material_id')) {
+            $product->rawMaterials()->detach();
+            $product->rawMaterials()->sync($request->raw_material_id);
+        } else {
+
+            $product->rawMaterials()->detach();
+        }
 
         return Redirect::route('products.index')->with('success', 'Product has been updated!');
     }

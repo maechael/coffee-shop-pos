@@ -13,7 +13,7 @@
 
                 <div class="card-body">
                     <form action="{{ route('suppliers.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
+                        @csrf
                         <!-- begin: Input Image -->
                         <div class="form-group row align-items-center">
                             <div class="col-md-12">
@@ -133,8 +133,10 @@
                                 <label for="type">Type of Supplier <span class="text-danger">*</span></label>
                                 <select class="form-control @error('type') is-invalid @enderror" name="type" required>
                                     <option value="">Select Type..</option>
-                                    <option value="Distributor">Distributor</option>
-                                    <option value="Whole Seller">Whole Seller</option>
+                                    @foreach($typeOfSuppliers as $typeOfSupplier)
+                                    <option value="{{$typeOfSupplier->name}}">{{$typeOfSupplier->name}}</option>
+
+                                    @endforeach
                                 </select>
                                 @error('type')
                                 <div class="invalid-feedback">

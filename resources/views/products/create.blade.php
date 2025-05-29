@@ -56,7 +56,7 @@
                                 </div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="category_id">Category <span class="text-danger">*</span></label>
                                 <select class="form-control" name="category_id" required>
                                     <option selected="" disabled>-- Select Category --</option>
@@ -70,7 +70,7 @@
                                 </div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="supplier_id">Supplier <span class="text-danger">*</span></label>
                                 <select class="form-control" name="supplier_id" required>
                                     <option selected="" disabled>-- Select Supplier --</option>
@@ -79,6 +79,19 @@
                                     @endforeach
                                 </select>
                                 @error('supplier_id')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="raw_material_id">Raw Materials </label>
+                                <select class="form-control select-multiple" name="raw_material_id[]" multiple>
+                                    @foreach ($rawMaterials as $rawMaterial)
+                                    <option value="{{ $rawMaterial->id }}" {{ old('raw_material_id') == $rawMaterial->id ? 'selected' : '' }} }}>{{ $rawMaterial->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('raw_material_id')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
@@ -153,6 +166,13 @@
 </div>
 
 <script>
+    $(document).ready(function() {
+        $('.select-multiple').select2({
+            placeholder: "-- Select Raw Materials --",
+            allowClear: true,
+            width: '100%' // optional: make it responsive
+        });
+    });
     $('#buying_date').datepicker({
         uiLibrary: 'bootstrap4',
         format: 'yyyy-mm-dd'

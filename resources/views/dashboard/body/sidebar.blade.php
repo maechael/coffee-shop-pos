@@ -105,6 +105,11 @@
                                 <i class="fa-solid fa-arrow-right"></i><span>Categories</span>
                             </a>
                         </li>
+                        <li class="{{ Request::is(['raw-material*']) ? 'active' : '' }}">
+                            <a href="{{ route('raw-material.index') }}">
+                                <i class="fa-solid fa-arrow-right"></i><span>Raw Material</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -125,6 +130,10 @@
                     <a href="{{ route('suppliers.index') }}" class="svg-icon">
                         <i class="fa-solid fa-users"></i>
                         <span class="ml-3">Suppliers</span>
+                    </a>
+                    <a href="{{ route('type-of-supplier.index') }}" class="svg-icon">
+                        <i class="fa-solid fa-users"></i>
+                        <span class="ml-3">Type Of Supplier</span>
                     </a>
                 </li>
                 @endif

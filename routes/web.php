@@ -18,6 +18,9 @@ use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\TypeOfSupplierController;
+use App\Models\TypeOfSupplier;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +61,7 @@ Route::middleware(['permission:customer.menu'])->group(function () {
 // ====== SUPPLIERS ======
 Route::middleware(['permission:supplier.menu'])->group(function () {
     Route::resource('/suppliers', SupplierController::class);
+    Route::resource('/type-of-supplier', TypeOfSupplierController::class);
 });
 
 // ====== EMPLOYEES ======
@@ -88,6 +92,7 @@ Route::middleware(['permission:product.menu'])->group(function () {
     Route::post('/products/import', [ProductController::class, 'importStore'])->name('products.importStore');
     Route::get('/products/export', [ProductController::class, 'exportData'])->name('products.exportData');
     Route::resource('/products', ProductController::class);
+    Route::resource('/raw-material', RawMaterialController::class);
 });
 
 // ====== CATEGORY PRODUCTS ======

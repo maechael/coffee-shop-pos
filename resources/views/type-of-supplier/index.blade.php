@@ -14,19 +14,18 @@
             @endif
             <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                 <div>
-                    <h4 class="mb-3">Category List</h4>
-                    <p class="mb-0">A Category dashboard lets you easily gather and visualize Category data from optimizing <br>
-                        the Category experience, ensuring Category retention. </p>
+                    <h4 class="mb-3">Type Of Supplier List</h4>
+
                 </div>
                 <div>
-                    <a href="{{ route('categories.create') }}" class="btn btn-primary add-list"><i class="fas fa-plus mr-3"></i>Create Category</a>
-                    <a href="{{ route('categories.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash mr-3"></i>Clear Search</a>
+                    <a href="{{ route('type-of-supplier.create') }}" class="btn btn-primary add-list"><i class="fas fa-plus mr-3"></i>Create Type Of Supplier</a>
+                    <a href="{{ route('type-of-supplier.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash mr-3"></i>Clear Search</a>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-12">
-            <form action="{{ route('categories.index') }}" method="get">
+            <form action="{{ route('type-of-supplier.index') }}" method="get">
                 <div class="d-flex flex-wrap align-items-center justify-content-between">
                     <div class="form-group row">
                         <label for="row" class="col-sm-3 align-self-center">Row:</label>
@@ -62,22 +61,20 @@
                         <tr class="ligth ligth-data">
                             <th>No.</th>
                             <th>@sortablelink('name')</th>
-                            <th>@sortablelink('slug')</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody class="ligth-body">
-                        @forelse ($categories as $category)
+                        @forelse ($typeOfSuppliers as $typeOfSupplier)
                         <tr>
-                            <td>{{ (($categories->currentPage() * 10) - 10) + $loop->iteration  }}</td>
-                            <td>{{ $category->name }}</td>
-                            <td>{{ $category->slug }}</td>
+                            <td>{{ (($typeOfSuppliers->currentPage() * 10) - 10) + $loop->iteration  }}</td>
+                            <td>{{ $typeOfSupplier->name }}</td>
                             <td>
                                 <div class="d-flex align-items-center list-action">
                                     <a class="badge bg-success mr-2" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"
-                                        href="{{ route('categories.edit', $category->slug) }}"><i class="ri-pencil-line mr-0"></i>
+                                        href="{{ route('type-of-supplier.edit', $typeOfSupplier) }}"><i class="ri-pencil-line mr-0"></i>
                                     </a>
-                                    <form action="{{ route('categories.destroy', $category->slug) }}" method="POST" style="margin-bottom: 5px">
+                                    <form action="{{ route('type-of-supplier.destroy', $typeOfSupplier) }}" method="POST" style="margin-bottom: 5px">
                                         @method('delete')
                                         @csrf
                                         <button type="submit" class="badge bg-warning mr-2 border-none" onclick="return confirm('Are you sure you want to delete this record?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"><i class="ri-delete-bin-line mr-0"></i></button>
@@ -97,7 +94,7 @@
                     </tbody>
                 </table>
             </div>
-            {{ $categories->links() }}
+            {{ $typeOfSuppliers->links() }}
         </div>
     </div>
     <!-- Page end  -->

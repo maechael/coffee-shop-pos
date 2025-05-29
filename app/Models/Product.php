@@ -60,4 +60,10 @@ class Product extends Model
             return $query->where('product_name', 'like', '%' . $search . '%');
         });
     }
+
+    public function rawMaterials()
+    {
+        return $this->belongsToMany(RawMaterial::class, 'product_raw_material', 'product_id', 'raw_material_id')
+            ->withTimestamps();
+    }
 }
